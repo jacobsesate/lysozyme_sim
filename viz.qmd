@@ -1,0 +1,53 @@
+---
+title: "MD Visualizations"
+jupyter: py-viz
+---
+
+
+```{python}
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# 1. Set the theme (Similar to theme_minimal() in ggplot)
+sns.set_theme(style="whitegrid")
+
+# 2. Load tidy data
+tips = sns.load_dataset("tips")
+
+# 3. Plotting (The ggplot2 equivalent)
+# x/y = aes(x, y), hue = aes(color), col = facet_wrap
+sns.relplot(
+    data=tips, 
+    x="total_bill", y="tip", 
+    hue="day", col="time",
+    kind="scatter"
+) # Semicolon is crucial to stop extra text output in Molten!
+```
+
+
+```{python}
+import pandas as pd
+import numpy as np
+from IPython.display import display
+
+# Create a sample DataFrame
+df = pd.DataFrame({
+    "Variable": ["Alpha", "Beta", "Gamma", "Delta"],
+    "Value": np.random.randn(4),
+    "Category": ["A", "B", "A", "B"]
+})
+
+# 1. Standard Jupyter-style display
+# This uAually renders with better spacing/bold headers
+display(df)
+
+# 2. Add some "Styling" (The 'Tidy' way to highlight data)
+# This will show you if Molten/Terminal can handle color-coding
+styled_df = df.style.background_gradient(cmap='viridis')
+
+
+display(styled_df)```
+
+
+
+
