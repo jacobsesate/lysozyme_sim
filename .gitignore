@@ -1,0 +1,22 @@
+# Binary Trajectory files (The biggest culprits)
+*.xtc
+*.trr
+*.dcd
+*.netcdf
+*.nc
+
+# Topology and Structure (Keep these if they are small, ignore if large)
+*.tpr
+*.gro
+*.pdb
+
+# Log and Energy files
+*.edr
+*.log
+*.cpt
+*.out
+
+# Temporary/Backup files
+# (GROMACS often makes files like #step0.pdb.1#)
+\#*
+*~

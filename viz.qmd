@@ -3,51 +3,131 @@ title: "MD Visualizations"
 jupyter: py-viz
 ---
 
+# Energy Minimization
 
-```{python}
-import seaborn as sns
+```python
+import pandas as pd
 import matplotlib.pyplot as plt
 
-# 1. Set the theme (Similar to theme_minimal() in ggplot)
-sns.set_theme(style="whitegrid")
+# 1. Load the data, skipping the GROMACS metadata lines (@ and #)
+# The sep='\s+' handles any number of spaces between columns
+df = pd.read_csv('outputs/potential.xvg', 
+                 sep='\s+', 
+                 header=None, 
+                 comment='@', 
+                 skiprows=lambda x: x < 0 or open('outputs/potential.xvg').readlines()[x].startswith('#')
+                 )
 
-# 2. Load tidy data
-tips = sns.load_dataset("tips")
+# 2. Rename columns for clarity (Standard GMX output: 0 is Step/Time, 1 is Energy)
+df.columns = ['Step', 'Potential_Energy']
 
-# 3. Plotting (The ggplot2 equivalent)
-# x/y = aes(x, y), hue = aes(color), col = facet_wrap
-sns.relplot(
-    data=tips, 
-    x="total_bill", y="tip", 
-    hue="day", col="time",
-    kind="scatter"
-) # Semicolon is crucial to stop extra text output in Molten!
+# 3. Create the plot
+fig, ax = plt.subplots(figsize=(8,6))
+ax.plot('Step', 'Potential_Energy', data=df, color='firebrick',)
+
+ax.set_title('Lysozyme Energy Minimization', fontsize=14)
+ax.set_xlabel('Step', fontsize=12)
+ax.set_ylabel('Potential Energy (kJ/mol)', fontsize=12)
+ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+
+plt.savefig('visualizations/em_plot.png', bbox_inches='tight')
+
+plt.show()
+```
+
+# NVT Equilibration (temperature)
+
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.read_csv('outputs/temperature.xvg', 
+                 sep='\s+', 
+                 header=None, 
+                 comment='@', 
+                 skiprows=lambda x: x < 0 or open('outputs/temperature.xvg').readlines()[x].startswith('#')
+                 )
+
+# 2. Rename columns for clarity (Standard GMX output: 0 is Step/Time, 1 is Energy)
+df.columns = ['Time (ps)', 'Temperature (K)']
+
+# 3. Create the plot
+fig, ax = plt.subplots(figsize=(8,6))
+ax.plot('Time (ps)', 'Temperature (K)', data=df, color='firebrick',)
+
+ax.set_title('Temperature--1AKI, NVT Equilibration', fontsize=14)
+ax.set_xlabel('Time (ps)', fontsize=12)
+ax.set_ylabel('Temperature (K)', fontsize=12)
+ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+
+plt.savefig('visualizations/nvt_plot.png', bbox_inches='tight')
+
+plt.show()
+```
+
+# NPT Equilibration (pressure and density)
+
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# 1. Load the data, skipping the GROMACS metadata lines (@ and #)
+# The sep='\s+' handles any number of spaces between columns
+df = pd.read_csv('outputs/pressure.xvg', 
+                 sep='\s+', 
+                 header=None, 
+                 comment='@', 
+                 skiprows=lambda x: x < 0 or open('outputs/pressure.xvg').readlines()[x].startswith('#')
+                 )
+
+# 2. Rename columns for clarity (Standard GMX output: 0 is Step/Time, 1 is Energy)
+df.columns = ['time', 'pressure']
+df['running_avg_pressure'] = df['pressure'].rolling(window=50, center=True).mean()
+# 3. Create the plot
+fig, ax = plt.subplots(figsize=(8,6))
+ax.scatter('time', 'pressure', data=df, s=15, facecolors='none', edgecolors='black',)
+ax.plot('time', 'running_avg_pressure', data=df, linewidth=4, color='firebrick')
+
+ax.set_title('Pressure--1AKI, NPT Equilibration', fontsize=14)
+ax.set_xlabel('Time (ps)', fontsize=12)
+ax.set_ylabel('Pressure (bar)', fontsize=12)
+ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+
+plt.savefig('visualizations/npt_press_plot.png', bbox_inches='tight')
+
+plt.show()
 ```
 
 
-```{python}
+```python
 import pandas as pd
-import numpy as np
-from IPython.display import display
+import matplotlib.pyplot as plt
 
-# Create a sample DataFrame
-df = pd.DataFrame({
-    "Variable": ["Alpha", "Beta", "Gamma", "Delta"],
-    "Value": np.random.randn(4),
-    "Category": ["A", "B", "A", "B"]
-})
+# 1. Load the data, skipping the GROMACS metadata lines (@ and #)
+# The sep='\s+' handles any number of spaces between columns
+df = pd.read_csv('outputs/density.xvg', 
+                 sep='\s+', 
+                 header=None, 
+                 comment='@', 
+                 skiprows=lambda x: x < 0 or open('outputs/density.xvg').readlines()[x].startswith('#')
+                 )
 
-# 1. Standard Jupyter-style display
-# This uAually renders with better spacing/bold headers
-display(df)
+# 2. Rename columns for clarity (Standard GMX output: 0 is Step/Time, 1 is Energy)
+df.columns = ['time', 'density']
+df['running_avg_density'] = df['density'].rolling(window=50, center=True).mean()
+# 3. Create the plot
+fig, ax = plt.subplots(figsize=(8,6))
+ax.scatter('time', 'density', data=df, s=15, facecolors='none', edgecolors='black',)
+ax.plot('time', 'running_avg_density', data=df, linewidth=4, color='firebrick')
 
-# 2. Add some "Styling" (The 'Tidy' way to highlight data)
-# This will show you if Molten/Terminal can handle color-coding
-styled_df = df.style.background_gradient(cmap='viridis')
+ax.set_title('Density--1AKI, NPT Equilibration', fontsize=14)
+ax.set_xlabel('Time (ps)', fontsize=12)
+ax.set_ylabel('Density (kg m^-3)', fontsize=12)
+ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
 
+plt.savefig('visualizations/npt_dens_plot.png', bbox_inches='tight')
 
-display(styled_df)```
-
-
+plt.show()
+```
 
 

@@ -2,7 +2,7 @@
 ;	File 'topol.top' was generated
 ;	By user: unknown (1414774848)
 ;	On host: g-g-1-7-15
-;	At date: Thu Mar  5 11:32:47 2026
+;	At date: Thu Mar 19 16:57:52 2026
 ;
 ;	This is a standalone topology file
 ;
@@ -13,7 +13,7 @@
 ;	Data prefix:  /usr/local/gromacs/avx2_256
 ;	Working dir:  /scratch/jsesate/lysozyme_sim
 ;	Command line:
-;	  gmx pdb2gmx -f 1AKI_clean.pdb -o 1AKI_processed.gro -water tip3p
+;	  gmx pdb2gmx -f 1AKI_clean.pdb -o 1AKI_processed.pdb -water tip3p
 ;	Force field was read from the standard GROMACS share directory.
 ;
 

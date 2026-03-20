@@ -1,0 +1,45 @@
+# This file was created Thu Mar 19 19:23:25 2026
+# Created by:
+#    :-) GROMACS - gmx energy, 2023.2-dev-20230712-a3d6917-dirty-unknown (-:
+# 
+# Executable:   /usr/local/gromacs/avx2_256/bin/gmx
+# Data prefix:  /usr/local/gromacs/avx2_256
+# Working dir:  /scratch/jsesate/lysozyme_sim
+# Command line:
+#   gmx energy -f nvt.edr -o temperature.xvg
+# gmx energy is part of G R O M A C S:
+#
+# Good ROcking Metal Altar for Chronical Sinners
+#
+@    title "GROMACS Energies"
+@    xaxis  label "Time (ps)"
+@    yaxis  label "(K)"
+@TYPE xy
+@ view 0.15, 0.15, 0.75, 0.85
+@ legend on
+@ legend box on
+@ legend loctype view
+@ legend 0.78, 0.8
+@ legend length 2
+@ s0 legend "Temperature"
+    0.000000  298.662201
+    5.000000  278.592041
+   10.000000  293.820343
+   15.000000  295.975677
+   20.000000  297.654083
+   25.000000  297.501587
+   30.000000  296.099487
+   35.000000  296.755829
+   40.000000  298.439270
+   45.000000  296.874512
+   50.000000  295.325165
+   55.000000  295.687195
+   60.000000  297.253998
+   65.000000  297.579529
+   70.000000  297.997559
+   75.000000  299.382660
+   80.000000  298.634613
+   85.000000  297.803314
+   90.000000  296.055176
+   95.000000  297.132751
+  100.000000  298.087982
