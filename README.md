@@ -150,12 +150,6 @@ Norm of force     =  1.8983993e+01
 
 Epot should be negative, and (for a simple protein in water) on the order of 105-106, depending on the system size and number of water molecules. The second important feature is the maximum force, Fmax, the target for which was set in minim.mdp - "emtol = 1000.0" - indicating a target Fmax of no greater than 1000 kJ mol-1 nm-1. 
 
-### Qs:
-- Why did we need to change coulombtype from cutoff to PME in the .mdp (going from ions.mdp to minim.mdp)?
-- Do we always use the 1000kJ mol^-1 nm^-1 cutoff for max force? When do we use a different max force target cutoff?
-
-## 7. Analysis of energy minimization
-
 I ran
 ```bash
 gmx energy -f em.edr -o potential.xvg
@@ -165,6 +159,10 @@ and typed "10 0" for Potential analysis.
 
 Then I generated the following plot with matplotlib in viz.qmd from the resulting potential.xvg:
 ![Energy Minimization Plot](visualizations/em_plot.png)
+
+### Qs:
+- Why did we need to change coulombtype from cutoff to PME in the .mdp (going from ions.mdp to minim.mdp)?
+- Do we use the 1000kJ mol^-1 nm^-1 cutoff for max force? When do we use a different max force target cutoff?
 
 ## 8. NVT Equilibration
 
@@ -193,6 +191,11 @@ mv temperature.xvg outputs/
 and selecting 15 0 for temperature we obtain another .xvg which I visualized in viz.qmd once again to produce
 
 ![NVT Equilibration--Temperature](visualizations/nvt_plot.png)
+### Qs:
+- How do I run checkpoint files if a run fails or the node I was on runs out of time?
+- The nvt.mdp file sets the temperature at 298K. What temperature ranges are appropriate for MD simulations? I presume extremes at a certain point tend to be biologically less accurate than others.
+- We should go over some of the .mdp parameters, different options and what kinds of values are appropriate in different situations. Since I'm both and undergrad and also not a physicist, how do I decide what I should put in my .mdp files at each step?
+
 ## 9. NPT Equilibration
 
 Similar to NVT, we equilibrate to our pressure of interest.
@@ -218,6 +221,11 @@ and selecting 22 0 for pressure and 16 0 for density, we obtain the following tw
 
 ![NPT Equilibration--Density](visualizations/npt_dens_plot.png)
 
+### Qs:
+- While the rolling mean pressure is rather constant, theres ridiculous variation at every time point. Is this normal? The pressure hitting 300 or -500 feels kind of ridiculous. 
+- The density fluctuates almost in oscillatory waves. Why might we see this pattern and again is the variation of 10kgm^-3 a lot or is this pretty typical?
+- You mentioned that you equilibrate in a single step rather than running temperature and subsequently running pressure. What is best practice?
+
 ## 10. MD simulation for 10-ns!
 
 ```bash
@@ -233,6 +241,11 @@ Finally, we made sure the protein was centered over the whole simulation, accoun
 ```bash
 gmx trjconv -s md_0_10.tpr -f md_0_10.xtc -o md_0_10_noPBC.xtc -pbc mol -center
 ```
+
+### Qs:
+- Since we are using checkpoint files, have we basically run the simulation 500ps equilibrating temperature, 500ps equilibrating pressure, and then 10 ns just letting it wiggle around total? Just want to make sure I understand the simulation sequence.
+- Is it possible to fix the coordinates about some axis of the crystal structure and then capture the change in each x,y,z direction over time of each atom? I'm thinking that we could take an average of the coordinates after a certain amount of time to quantify how much any given atom is stable, but maybe this is a jank way of measuring this.
+- I take it no actual bond-altering chemistry is occuring in these simulations? I get that hydrogen bonding and van der waals interactions are shifting as the conformation is altered, but how do we actually simulate/is it in our interest to simulation things like enzymes cleaving a molecule.
 
 ## 11. MD Simulation Analysis!
 
@@ -288,3 +301,7 @@ selecting 1 ("Protein") and 13 ("SOL")
 
 Together, we can plot these to produce:
 ![Number of Hydrogen Bonds](visualizations/hb_plot.png)
+
+### Qs:
+- We measured RMSD, radius of gyration, secondary structure over time, and number of hydrogen bonds over time. What other measures are useful and how would I go about writing my own method of measurement? How do you extract information from the trajectories outside of just running built-in gmx modules like hbond or dssp?
+- How do you usually go about making visualizations for papers from this MD simulation data? Why is .xvg the typical file format--typical of the field or just a tutorial artifact? 
