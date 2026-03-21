@@ -1,0 +1,48 @@
+     :-) GROMACS - gmx mdrun, 2023.2-dev-20230712-a3d6917-dirty-unknown (-:
+
+Executable:   /usr/local/gromacs/avx2_256/bin/gmx
+Data prefix:  /usr/local/gromacs/avx2_256
+Working dir:  /scratch/jsesate/lysozyme_sim
+Command line:
+  gmx mdrun -deffnm md_0_10
+
+
+Back Off! I just backed up md_0_10.log to ./#md_0_10.log.1#
+Compiled SIMD is AVX2_256, but CPU also supports AVX_512 (see log).
+Reading file md_0_10.tpr, VERSION 2023.2-dev-20230712-a3d6917-dirty-unknown (single precision)
+Changing nstlist from 10 to 100, rlist from 1.2 to 1.342
+
+1 GPU selected for this run.
+Mapping of GPU IDs to the 2 GPU tasks in the 1 rank on this node:
+  PP:0,PME:0
+PP tasks will do (non-perturbed) short-ranged interactions on the GPU
+PP task will update and constrain coordinates on the GPU
+PME tasks will do all aspects on the GPU
+Using 1 MPI thread
+
+Non-default thread affinity set, disabling internal thread affinity
+
+Using 4 OpenMP threads 
+
+
+Back Off! I just backed up md_0_10.xtc to ./#md_0_10.xtc.1#
+
+Back Off! I just backed up md_0_10.edr to ./#md_0_10.edr.1#
+starting mdrun 'LYSOZYME in water'
+5000000 steps,  10000.0 ps.
+
+Writing final coordinates.
+
+Back Off! I just backed up md_0_10.gro to ./#md_0_10.gro.1#
+
+NOTE: 13 % of the run time was spent in pair search,
+      you might want to increase nstlist (this has no effect on accuracy)
+
+               Core t (s)   Wall t (s)        (%)
+       Time:     7336.578     1834.149      400.0
+                         30:34
+                 (ns/day)    (hour/ns)
+Performance:      471.063        0.051
+
+GROMACS reminds you: "I don’t think we’re afraid of inline assembly." (Szilard Pall)
+

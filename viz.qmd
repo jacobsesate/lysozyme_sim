@@ -58,7 +58,7 @@ ax.plot('Time (ps)', 'Temperature (K)', data=df, color='firebrick',)
 ax.set_title('Temperature--1AKI, NVT Equilibration', fontsize=14)
 ax.set_xlabel('Time (ps)', fontsize=12)
 ax.set_ylabel('Temperature (K)', fontsize=12)
-ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+#ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
 
 plt.savefig('visualizations/nvt_plot.png', bbox_inches='tight')
 
@@ -91,7 +91,7 @@ ax.plot('time', 'running_avg_pressure', data=df, linewidth=4, color='firebrick')
 ax.set_title('Pressure--1AKI, NPT Equilibration', fontsize=14)
 ax.set_xlabel('Time (ps)', fontsize=12)
 ax.set_ylabel('Pressure (bar)', fontsize=12)
-ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+#ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
 
 plt.savefig('visualizations/npt_press_plot.png', bbox_inches='tight')
 
@@ -123,11 +123,140 @@ ax.plot('time', 'running_avg_density', data=df, linewidth=4, color='firebrick')
 ax.set_title('Density--1AKI, NPT Equilibration', fontsize=14)
 ax.set_xlabel('Time (ps)', fontsize=12)
 ax.set_ylabel('Density (kg m^-3)', fontsize=12)
-ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+#ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
 
 plt.savefig('visualizations/npt_dens_plot.png', bbox_inches='tight')
 
 plt.show()
 ```
 
+# Root-Mean-Square-Deviation
 
+```python
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# 1. Load the data, skipping the GROMACS metadata lines (@ and #)
+# The sep='\s+' handles any number of spaces between columns
+rmsd_df = pd.read_csv('outputs/rmsd.xvg', 
+                 sep='\s+', 
+                 header=None, 
+                 comment='@', 
+                 skiprows=lambda x: x < 0 or open('outputs/rmsd.xvg').readlines()[x].startswith('#')
+                 )
+
+xtal_df = pd.read_csv('outputs/rmsd_xtal.xvg', 
+                 sep='\s+', 
+                 header=None, 
+                 comment='@', 
+                 skiprows=lambda x: x < 0 or open('outputs/rmsd_xtal.xvg').readlines()[x].startswith('#')
+                 )
+
+# 2. Rename columns for clarity (Standard GMX output: 0 is Step/Time, 1 is Energy)
+rmsd_df.columns = ['time', 'rmsd']
+xtal_df.columns = ['time', 'rmsd']
+rmsd_df['running_avg_rmsd'] = rmsd_df['rmsd'].rolling(window=50, center=True).mean()
+xtal_df['running_avg_rmsd'] = xtal_df['rmsd'].rolling(window=50, center=True).mean()
+# 3. Create the plot
+fig, ax = plt.subplots(figsize=(8,6))
+ax.scatter('time', 'rmsd', data=rmsd_df, s=15, facecolors='none', edgecolors='grey',alpha=0.5, label='_nolegend_')
+ax.plot('time', 'running_avg_rmsd', data=rmsd_df, linewidth=4, color='black', label='RMSD Equilibrated')
+ax.scatter('time', 'rmsd', data=xtal_df, s=15, facecolors='none', edgecolors='red',alpha=0.5, label='_nolegend_')
+ax.plot('time', 'running_avg_rmsd', data=xtal_df, linewidth=4, color='firebrick', label='RMSD Crystal')
+
+ax.set_title('RMSD--1AKI, MD Simulation', fontsize=14)
+ax.set_xlabel('Time (ns)', fontsize=12)
+ax.set_ylabel('RMSD (nm)', fontsize=12)
+#ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+
+plt.legend()
+plt.savefig('visualizations/rmsd_plot.png', bbox_inches='tight')
+plt.show()
+```
+
+# Radius of Gyration
+
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# 1. Load the data, skipping the GROMACS metadata lines (@ and #)
+# The sep='\s+' handles any number of spaces between columns
+df = pd.read_csv('outputs/gyrate.xvg', 
+                 sep='\s+', 
+                 header=None, 
+                 comment='@', 
+                 skiprows=lambda x: x < 0 or open('outputs/gyrate.xvg').readlines()[x].startswith('#')
+                 )
+
+# 2. Rename columns for clarity (Standard GMX output: 0 is Step/Time, 1 is Energy)
+df.columns = ['time', 'radius', 'rx','ry','rz']
+df['running_avg_radius'] = df['radius'].rolling(window=50, center=True).mean()
+# 3. Create the plot
+fig, ax = plt.subplots(figsize=(8,6))
+ax.scatter('time', 'radius', data=df, s=15, facecolors='none', edgecolors='black',)
+ax.plot('time', 'running_avg_radius', data=df, linewidth=4, color='firebrick')
+
+ax.set_title('Radius of Gyration--1AKI, MD Simulation', fontsize=14)
+ax.set_xlabel('Time (ns)', fontsize=12)
+ax.set_ylabel('R_g (nm)', fontsize=12)
+#ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+
+plt.savefig('visualizations/rg_plot.png', bbox_inches='tight')
+
+plt.show()
+```
+
+# Number of Hydrogen Bonds
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# 1. Load the data, skipping the GROMACS metadata lines (@ and #)
+# The sep='\s+' handles any number of spaces between columns
+mc_df = pd.read_csv('outputs/hbnum_mainchain.xvg', 
+                 sep='\s+', 
+                 header=None, 
+                 comment='@', 
+                 skiprows=lambda x: x < 0 or open('outputs/hbnum_mainchain.xvg').readlines()[x].startswith('#')
+                 )
+sc_df = pd.read_csv('outputs/hbnum_sidechain.xvg', 
+                 sep='\s+', 
+                 header=None, 
+                 comment='@', 
+                 skiprows=lambda x: x < 0 or open('outputs/hbnum_sidechain.xvg').readlines()[x].startswith('#')
+                 )
+pw_df = pd.read_csv('outputs/hbnum_prot_wat.xvg', 
+                 sep='\s+', 
+                 header=None, 
+                 comment='@', 
+                 skiprows=lambda x: x < 0 or open('outputs/hbnum_prot_wat.xvg').readlines()[x].startswith('#')
+                 )
+
+# 2. Rename columns for clarity (Standard GMX output: 0 is Step/Time, 1 is Energy)
+mc_df.columns = ['time', 'hb', 'pairs']
+sc_df.columns = ['time', 'hb', 'pairs']
+pw_df.columns = ['time', 'hb', 'pairs']
+
+mc_df['running_avg_hb'] = mc_df['hb'].rolling(window=50, center=True).mean()
+sc_df['running_avg_hb'] = sc_df['hb'].rolling(window=50, center=True).mean()
+pw_df['running_avg_hb'] = pw_df['hb'].rolling(window=50, center=True).mean()
+# 3. Create the plot
+fig, ax = plt.subplots(figsize=(8,6))
+ax.scatter('time', 'hb', data=mc_df, s=15, facecolors='none', edgecolors='grey',alpha=0.5, label='_nolegend_')
+ax.plot('time', 'running_avg_hb', data=mc_df, linewidth=4, color='black', label='MainChain+H')
+ax.scatter('time', 'hb', data=sc_df, s=15, facecolors='none', edgecolors='firebrick',alpha=0.5, label='_nolegend_')
+ax.plot('time', 'running_avg_hb', data=sc_df, linewidth=4, color='red', label='SideChain')
+ax.scatter('time', 'hb', data=pw_df, s=15, facecolors='none', edgecolors='blue',alpha=0.5,label='_nolegend_')
+ax.plot('time', 'running_avg_hb', data=pw_df, linewidth=4, color='darkblue',label='Protein-Water')
+
+ax.set_title('Number of Hydrogen Bonds--1AKI, MD Simulation', fontsize=14)
+ax.set_xlabel('Time (ns)', fontsize=12)
+ax.set_ylabel('Hydrogen Bonds (count)', fontsize=12)
+#ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+
+plt.savefig('visualizations/hb_plot.png', bbox_inches='tight')
+
+plt.show()
+```

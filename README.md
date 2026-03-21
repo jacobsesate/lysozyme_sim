@@ -239,6 +239,52 @@ gmx trjconv -s md_0_10.tpr -f md_0_10.xtc -o md_0_10_noPBC.xtc -pbc mol -center
 RMSD data on the equilibrated .tpr vs the crystal .tpr
 ```bash
 gmx rms -s md_0_10.tpr -f md_0_10_noPBC.xtc -o rmsd.xvg -tu ns
+mv rmsd.xvg outputs/
 gmx rms -s em.tpr -f md_0_10_noPBC.xtc -o rmsd_xtal.xvg -tu ns
+mv rmsd_xtal.xvg outputs/
 ```
 choosing 4 ("Backbone") for least squares and RMSD
+
+Plot of RMSD 
+
+![RMSD of MD Simulation](visualizations/rmsd_plot.png)
+
+Next, we analyze the radius of gyration which gives us a measure of a protein's compactness. If a protein unfolds, it's R_g will change over time.
+
+```bash
+gmx gyrate -s md_0_10.tpr -f md_0_10_noPBC.xtc -o gyrate.xvg
+mv gyrate.xvg outputs/
+```
+selecting 1 for ("Protein"). 
+
+![Radius of Gyration](visualizations/rg_plot.png)
+
+Assessing Secondary structure over time is also within GROMACS capabilites
+
+*ERROR: NUM FLAG DOES NOT WORK. CANNOT EXPORT A .XVG FOR VISUALIZATION*
+```bash
+gmx dssp -s md_0_10.tpr -f md_0_10_noPBC.xtc -tu ns -o dssp.dat -num dssp_num.xvg
+```
+
+Finally, we assess how many different types of hydrogen bonds are formed:
+- Backbone
+- Sidechain
+- Protein-Water
+
+```bash
+gmx hbond -s md_0_10.tpr -f md_0_10_noPBC.xtc -tu ns -num hbnum_mainchain.xvg
+```
+selecting 7 ("MainChain+H") both times.
+
+```bash
+gmx hbond -s md_0_10.tpr -f md_0_10_noPBC.xtc -tu ns -num hbnum_sidechain.xvg
+```
+selecting 8 ("SideChain") both times.
+
+```bash
+gmx hbond -s md_0_10.tpr -f md_0_10_noPBC.xtc -tu ns -num hbnum_prot_wat.xvg
+```
+selecting 1 ("Protein") and 13 ("SOL")
+
+Together, we can plot these to produce:
+![Number of Hydrogen Bonds](visualizations/hb_plot.png)
